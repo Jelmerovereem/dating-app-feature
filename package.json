@@ -1,0 +1,23 @@
+{
+  "name": "dating-app-feature",
+  "version": "1.0.0",
+  "description": "Mijn feature voor de dating-app",
+  "main": "index.js",
+  "dependencies": {
+    "camelcase": "^5.3.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jelmerovereem/dating-app-feature.git"
+  },
+  "author": "Jelmer Overeem jelmer_overeem@hotmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jelmerovereem/dating-app-feature/issues"
+  },
+  "homepage": "https://github.com/Jelmerovereem/dating-app-feature#readme"
+}
