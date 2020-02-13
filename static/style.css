@@ -1,0 +1,6 @@
+body { font-family: 'poppins'; }
+h1 { color: white; }
+#banner { 
+	background-image: url('https://i.ibb.co/GWDFvVq/photo-1579999284976-73d606de1161.jpg');
+	height: 1200px;
+}
