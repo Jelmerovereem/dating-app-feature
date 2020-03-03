@@ -1,0 +1,25 @@
+body {
+	background-color: lightgreen;
+}
+form {
+	border: 2px solid black;
+	padding: 20px;
+}
+
+label, input, button, textarea {
+	display: block;
+}
+
+input, textarea, select {
+	margin-bottom: 20px;
+}
+
+button {
+	margin-top: 20px;
+	padding: 12px 20px;
+	background-color: white;
+	color: black;
+	border: none;
+	border-radius: 10px;
+	box-shadow: 1px 1px 5px;
+}
