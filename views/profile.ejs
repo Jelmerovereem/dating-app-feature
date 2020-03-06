@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+	<%- include('partials/head') %>
+	<body>
+		<header>
+			<%- include('partials/navbar') %>
+		</header>
+		<main>
+			<section>
+				<div>
+					<img src="https://raw.githubusercontent.com/Jelmerovereem/dating-app-feature/master/static/img/profile_icon.png" alt="">
+					<p><.% First Name %.><.% Last Name %.></p>
+				</div>
+				<ul>
+					<li>Email: <.% Emailadress %.></li>
+					<li>Leeftijd: <.% age %.></li>
+					<li>filminteresses: <.% movieInterests %.></li>
+					<li>seriesinteresses: <.% serieInterests %.></li>
+					<li>Games interesses: <.% gameInterests %.></li>
+				</ul>
+			</section>
+			<h1>Voeg film toe</h1>
+			<form action="/succes.ejs" method="POST">
+				<label for="title">Naam film</label>
+				<input name="title" type="text">
+				<label for="genre">Genre</label>
+				<select name="genre" id="">
+					<option value="">Action</option>
+					<option value="">Adult</option>
+					<option value="">Adventure</option>
+					<option value="">Animation</option>
+					<option value="">Biography</option>
+				</select>
+				<label for="description">Beschrijving</label>
+				<textarea name="description" id="" cols="30" rows="10"></textarea>
+				<button type="submit">Voeg toe</button>
+			</form>
+			<h1>Voeg Serie toe</h1>
+			<form action="" method="POST">
+				<label for="">Naam serie</label>
+				<input name="" type="text">
+				<label for="">Genre</label>
+				<select name="" id="">
+					<option value="">Action</option>
+					<option value="">Adult</option>
+					<option value="">Adventure</option>
+					<option value="">Animation</option>
+					<option value="">Biography</option>
+				</select>
+				<label for="description">Beschrijving</label>
+				<textarea name="description" id="" cols="30" rows="10"></textarea>
+			</form>
+		</main>
+	</body>
+</html>
