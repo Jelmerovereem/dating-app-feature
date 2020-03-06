@@ -1,23 +1,57 @@
 //Express server Back-End
 const express = require('express');
+var slug = require('slug');
+var bodyParser = require('body-parser');
+const urlencodedParser = bodyParser.urlencoded({
+  extended: true
+});
 const app = express();
 const PORT = 8000;
+const data = [{
+  title: "",
+  genre: "",
+  description: "",
+}];
 /*
 const data = {
   userQuery: req.params.userQuery
 }*/
 
 app.use(express.static('static'));
+app.use(bodyParser.urlencoded({ extended: true}));
 app.set('view engine', 'ejs');
+app.post('/succes.ejs', urlencodedParser, postFormulier);
 
+function postFormulier(req, res){
+  /*data.push({
+      title: req.body.title,
+      genre: req.body.genre,
+      description: req.body.description
+    });*/
+  res.render('succes.ejs', {
+    data: req.body 
+  });
+  /*res.redirect('/succes.ejs');*/
+}
+
+app.get('/', function (req, res){
+  res.render('profile.ejs')
+});
+
+app.get('/contact.ejs', function (req, res){
+  res.render('contact.ejs')
+});
+
+app.get('/add.ejs', function (req, res) {
+  res.render('add.ejs')
+});
 
 app.get('/:userQuery', function (req,res) {
-  res.render('index.ejs', {data : {userQuery: req.params.userQuery,
+  res.render('search.ejs', {data : {userQuery: req.params.userQuery,
                                     searchResults: ['user1', 'user2', 'user3'],
                                     loggedIn: false,
                                     username: 'John Lopez'}})
 });
-
 
 
 /*app.get('/', function (req, res) {
