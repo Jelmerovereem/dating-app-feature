@@ -12,6 +12,9 @@ const data = [{
   genre: "",
   description: "",
 }];
+
+require('dotenv').config();
+
 /*
 const data = {
   userQuery: req.params.userQuery
@@ -23,14 +26,15 @@ app.set('view engine', 'ejs');
 app.post('/succes.ejs', urlencodedParser, postFormulier);
 
 function postFormulier(req, res){
-  /*data.push({
+  data.push({
       title: req.body.title,
-      genre: req.body.genre,
+      genre: req.body.value,
       description: req.body.description
-    });*/
+    });
   res.render('succes.ejs', {
     data: req.body 
   });
+  console.log(data);
   /*res.redirect('/succes.ejs');*/
 }
 
