@@ -1,5 +1,6 @@
 //Express server Back-End
 const express = require('express');
+const mongo = require('mongodb');
 var slug = require('slug');
 var bodyParser = require('body-parser');
 const urlencodedParser = bodyParser.urlencoded({
@@ -14,6 +15,34 @@ const data = [{
 }];
 
 require('dotenv').config();
+
+const db = null;
+
+async function main(){
+  const url = 'mongodb://' + process.env.DB_HOST + ':' + process.env.DB_PORT;  
+  const client = new mongo(url);
+
+  try {
+    await client.connect();
+
+    await listDatabases(client);
+  } catch (e) {
+      console.error(e);
+    } finally {
+        await client.close();
+      }
+
+
+}
+
+main().catch(console.error);
+
+async function listDatabases(client) {
+  DatabasesList = await client.db().admin().listDatabases();
+
+  console.log("Databases:");
+  DatabasesList.databases.forEach(db => console.log(` - ${db.name}`));
+}
 
 app.use(express.static('static'));
 app.use(bodyParser.urlencoded({ extended: true}));
