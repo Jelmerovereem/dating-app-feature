@@ -8,45 +8,41 @@ const urlencodedParser = bodyParser.urlencoded({
 const app = express();
 const PORT = 8000;
 const data = [{
-  title: "",
-  genre: "",
-  description: "",
+  title: '',
+  genre: '',
+  description: '',
 }];
 
 require('dotenv').config();
-
-/*
-const data = {
-  userQuery: req.params.userQuery
-}*/
 
 app.use(express.static('static'));
 app.use(bodyParser.urlencoded({ extended: true}));
 app.set('view engine', 'ejs');
 app.post('/succes.ejs', urlencodedParser, postFormulier);
+app.post('/contact.ejs', urlencodedParser, postFormulier)
 
 function postFormulier(req, res){
   data.push({
       title: req.body.title,
-      genre: req.body.value,
+      genre: req.body.genre,
       description: req.body.description
     });
   res.render('succes.ejs', {
     data: req.body 
   });
   console.log(data);
-  /*res.redirect('/succes.ejs');*/
+  console.log(req.body);
 }
 
 app.get('/', function (req, res){
   res.render('profile.ejs')
 });
 
-app.get('/contact.ejs', function (req, res){
+app.get('/contact', function (req, res){
   res.render('contact.ejs')
 });
 
-app.get('/add.ejs', function (req, res) {
+app.get('/add', function (req, res) {
   res.render('add.ejs')
 });
 
