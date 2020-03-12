@@ -9,40 +9,45 @@ const urlencodedParser = bodyParser.urlencoded({
 const app = express();
 const PORT = 8000;
 const data = [{
-  title: '',
-  genre: '',
-  description: '',
-}];
+  id: '1',
+  title: 'Wonder woman',
+  genre: 'Action',
+  description: 'Cool DC Comics movie about a greek Goddess',
+},
+{
+  id: '2',
+  title: 'Titanic',
+  genre: 'Romance',
+  description: 'Best movie ever.',
+},
+{
+  id: '3',
+  title: 'The Expandables 1',
+  genre: 'Action',
+  description: 'Cool action movie starring Sylvester Stallone',
+},
+{
+  id: '4',
+  title: 'The Expandables 2',
+  genre: 'Action',
+  description: 'Cool action movie starring Sylvester Stallone part 2',
+}
+];
 
 require('dotenv').config();
 
-const db = null;
+let db = null;
+const uri = process.env.DB_HOST + ':' + process.env.DB_PORT;
 
-async function main(){
-  const url = 'mongodb://' + process.env.DB_HOST + ':' + process.env.DB_PORT;  
-  const client = new mongo(url);
+mongo.MongoClient.connect(uri, function (err, client) {
+  if (err) throw err
+  db = client.db(process.env.DB_NAME);
+  //console.log(client);
+  db.collection('dating-app').insertMany(data);
+  });
 
-  try {
-    await client.connect();
+console.log(data);
 
-    await listDatabases(client);
-  } catch (e) {
-      console.error(e);
-    } finally {
-        await client.close();
-      }
-
-
-}
-
-main().catch(console.error);
-
-async function listDatabases(client) {
-  DatabasesList = await client.db().admin().listDatabases();
-
-  console.log("Databases:");
-  DatabasesList.databases.forEach(db => console.log(` - ${db.name}`));
-}
 
 app.use(express.static('static'));
 app.use(bodyParser.urlencoded({ extended: true}));
