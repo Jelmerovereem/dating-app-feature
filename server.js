@@ -34,19 +34,23 @@ const data = [{
 }
 ];
 
+//require .env file zodat je daar database connectie links uit kan halen
 require('dotenv').config();
 
-let db = null;
-const uri = process.env.DB_HOST + ':' + process.env.DB_PORT;
+// Maak variable db(database) aan en zet deze eerst op null
+let db = null
+//Dit is je database link van mongodb, dit moet goed in je .env staan
+const url = process.env.DB_HOST + ':' + process.env.DB_PORT;
 
-mongo.MongoClient.connect(uri, function (err, client) {
+mongo.MongoClient.connect(url, function (err, client) {
   if (err) throw err
+  //maak eerst via compass een database aan! Zet die naam in je .env onder DB_NAME
   db = client.db(process.env.DB_NAME);
-  //console.log(client);
-  db.collection('dating-app').insertMany(data);
-  });
-
-console.log(data);
+  //checken of je client/database correct is geconnect
+  console.log(client);
+  //Voeg objecten toe van 'data' array
+  db.collection('dating-app').insertMany(data); 
+});
 
 
 app.use(express.static('static'));
