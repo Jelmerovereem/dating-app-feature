@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head')%>
+<body>
+	<header>
+		<%- include('partials/navbar')%>
+	</header>
+	<main>
+		<% data.forEach(function(data) { %>
+		<p>Title: <%= data.title %></p>
+		<p>Genre: <%= data.genre %></p>
+		<p>Description: <%= data.description %></p>
+			<% });%>
+	</main>
+</body>
+</html>
