@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Document</title>
+	<%- include('partials/head')%>
 </head>
 <body>
+	<header>
+		<%- include('partials/navbar')%>
+	</header>
 	<h1>Gelukt!</h1>
-	<h2><%= data.title %>, <%= data.genre %>,<%= data.description %></h2>
+	<p>Titel film: <%= data.movieTitle %>, Jouw rating: <%= data.stars %></p>
+
+	<a href="/">Terug naar je profiel</a>
 </body>
 </html>

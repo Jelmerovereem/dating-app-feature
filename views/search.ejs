@@ -3,15 +3,10 @@
 <%- include('partials/head') %>
 <body>
 <%- include('partials/navbar') %>
-	<h1>You searched for: <%= data.userQuery %></h1>
-	<% if(data.loggedIn){ %>
-		<h2> You are logged in as: <%= data.username %></h2>
-		<% } %>
-	<ul>
-		<% data.searchResults.forEach(result=>{ %>
-		<li> <%= result %> </li>
-	<% }); %>
-	</ul>
+	<form action="/film.ejs" method="POST">
+		<input name="zoekveld" type="text">
+		<button type="submit">zoek</button>
+	</form>
 	<%- include('partials/footer') %>
 </body>
 </html>

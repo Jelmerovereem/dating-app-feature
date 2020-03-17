@@ -9,21 +9,29 @@
 			<section>
 				<div>
 					<img src="https://raw.githubusercontent.com/Jelmerovereem/dating-app-feature/master/static/img/profile_icon.png" alt="">
-					<p><.% First Name %.><.% Last Name %.></p>
+					<p><%= data.name %></p>
 				</div>
 				<ul>
-					<li>Email: <.% Emailadress %.></li>
-					<li>Leeftijd: <.% age %.></li>
-					<li>filminteresses: <.% movieInterests %.></li>
-					<li>seriesinteresses: <.% serieInterests %.></li>
-					<li>Games interesses: <.% gameInterests %.></li>
+					<!-- <li>Email: <.% Emailadress %.></li> -->
+					<li>Leeftijd: <%= data.age %></li>
+					<li>Favoriete films: <%= data.favoMovies %></li>
+<!-- 					<li>seriesinteresses: <.% serieInterests %.></li>
+<li>Games interesses: <.% gameInterests %.></li> -->
 				</ul>
 			</section>
-			<h1>Voeg film toe</h1>
+			<h1>Voeg film toe aan je favorieten</h1>
 			<form action="/succes.ejs" method="POST">
-				<label for="title">Naam film</label>
-				<input name="title" type="text">
-				<label for="genre">Genre</label>
+				<label for="movieTitle">Naam film</label>
+				<input name="movieTitle" type="text">
+				<label for="stars">Aantal sterren</label>
+				<select name="stars" id="">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+				</select>
+				<!-- <label for="genre">Genre</label>
 				<select name="genre" id="">
 					<option value="Action">Action</option>
 					<option value="Adult">Adult</option>
@@ -32,10 +40,10 @@
 					<option value="Biography">Biography</option>
 				</select>
 				<label for="description">Beschrijving</label>
-				<textarea name="description" id="" cols="30" rows="10"></textarea>
+				<textarea name="description" id="" cols="30" rows="10"></textarea> -->
 				<button type="submit">Voeg toe</button>
 			</form>
-			<h1>Voeg Serie toe</h1>
+			<!--<h1>Voeg Serie toe</h1>
 			<form action="" method="POST">
 				<label for="">Naam serie</label>
 				<input name="" type="text">
@@ -49,7 +57,7 @@
 				</select>
 				<label for="description">Beschrijving</label>
 				<textarea name="description" id="" cols="30" rows="10"></textarea>
-			</form>
+			</form>-->
 		</main>
 	</body>
 </html>
