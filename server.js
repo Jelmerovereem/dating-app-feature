@@ -38,6 +38,7 @@ mongo.MongoClient.connect(url, function (err, client, req, res) {
 function addMovie(req, res) {
     //Voeg objecten toe van 'data' array aan database
     db.collection('dating-app').insertOne({
+      
       title: req.body.title,
       genre: req.body.genre,
       description: req.body.description
@@ -48,18 +49,19 @@ function addMovie(req, res) {
     console.log(data);
 };
 
-function postFormulier(req, res){
+/*function postFormulier(req, res){
   data.push({
-      title: req.body.title,
-      genre: req.body.genre,
-      description: req.body.description
+    id: ,
+    title: req.body.title,
+    genre: req.body.genre,
+    description: req.body.description
     });
   res.render('succes.ejs', {
     data: req.body 
   });
   console.log(data);
   console.log(req.body);
-};
+};*/
 
 app.get('/', function (req, res){
   res.render('profile.ejs')
@@ -85,7 +87,6 @@ app.get('/movie', function (req, res) {
       console.log('Error, cannot find mongo objectID');
     } else {
       console.log('Found mongo objectID');
-      /*console.log(data.title);*/
     };
     console.log(data.title);
     //render the object to movie.ejs
@@ -93,7 +94,23 @@ app.get('/movie', function (req, res) {
       data: data
     });
   };
-  
+});
+
+app.get('/movies', function (req, res) {
+  //find all objects in database collection
+  var arrayCollection = db.collection('dating-app').find().toArray(done);
+  function done(err, data) {
+    if (err) {
+      console.log('Error, cannot find objects in database');
+    } else {
+      console.log('Found the objects in database');
+    };
+    console.log(data);
+    console.log(data[0].title);
+    res.render('movies.ejs', {
+      data: data
+    });
+  };
 });
 
 app.get('/:userQuery', function (req,res) {
