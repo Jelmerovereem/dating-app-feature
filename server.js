@@ -22,6 +22,9 @@ const urlencodedParser = bodyParser.urlencoded({
 //This is the baseURl for accessing the API database
 let baseURL = 'https://api.themoviedb.org/3/';
 
+//This is the baseURl for the images for accessing the images in the API database
+let baseImgURL = 'https://image.tmdb.org/t/p/w500';
+
 //The id of a movie in the API database
 let movieIdApi = 'null';
 
@@ -67,17 +70,28 @@ mongo.MongoClient.connect(url, function (err, client, req, res) {
     db = client.db(process.env.DB_NAME);
   });
 
+//search in api for the img
+/*request(baseURL + 'configuration?api_key=' + APIKEY, function (error, response, body) {
+  console.log('error: ', error);
+  console.log('Response, img: ', response);
+  console.log('body: ', body);
+  console.log(APIKEY);
+});*/
+
 function addMovie(req, res) {
     //the movie the user adds to his profile
     let insertedMovie = req.body.movieTitle;
+
+    let insertedStars = req.body.stars;
     //log this movie for confirmation
     console.log('Movie title input: ', insertedMovie);
 
     //search in api for the inserted movie
-    request(baseURL + 'search/movie/?api_key=' + APIKEY + '&query=' + insertedMovie, function (error, response,body) {
+    request(baseURL + 'search/movie/?api_key=' + APIKEY + '&query=' + insertedMovie, function (error, response,body, req, res) {
       body = JSON.parse(body); //parse the outcome to object, so requesting data is possible
       console.log('Movie title from api: ', body.results[0].original_title); //confirming the title
-
+      let posterLink = baseImgURL + body.results[0].poster_path; //the path to the movie poster image
+      console.log('imagepath: ', posterLink);
     //Add the title of the movie into the 'favoMovies' array in the database
     db.collection('users').updateOne({id: 1}, { $addToSet: {favoMovies: body.results[0].original_title}}, function(err, req, res) {
       if (err) {
@@ -88,28 +102,35 @@ function addMovie(req, res) {
     //Closes the function that is in updateOne()
     });
 
-    //Create a object in the database and add strings into the object. If the user adds a movie it goes into the database collection 'dating-app'
-    db.collection('addedMovies').insertOne({
-      title: req.body.movieTitle, //get title
-      stars: req.body.stars //get stars
-    });
 
     //Push the inserted data into the data variable, so it can be rendered to succes.ejs
     data.push({
       title: body.results[0].original_title,
-      stars: req.body.stars
+      stars: insertedStars,
+      imgLink: baseImgURL + body.results[0].poster_path
     });
+
+    //Create a object in the database and add strings into the object. If the user adds a movie it goes into the database collection 'dating-app'
+    db.collection('addedMovies').insertOne({
+      title: body.results[0].original_title, //get title
+      stars: insertedStars, //get stars
+      imgLink: baseImgURL + body.results[0].poster_path
+    });
+    //Closes the function that is in request()
+    });
+
+
+
     //Render the inserted data to the succes.ejs page
     res.render('succes.ejs', {
       data: req.body
     });
-    //Closes the function that is in request()
-    });
     
     //Confirmation for the data that is added to the database
-    console.log('This data is added to the database:', req.body);
+    console.log('This data is added to the database:', data);
     console.log('title: ', req.body.movieTitle);
-    console.log('stars: ', req.body.stars)
+    console.log('stars: ', req.body.stars);
+    console.log('imgLink: ', );
 };
 
 //This function is to search for movies in the API database, this can be ignored! Has nothing to do with the dating-app feature.
@@ -119,9 +140,11 @@ function zoekMovie(req, res) {
 
   request(baseURL + 'search/movie/?api_key=' + APIKEY + '&query=' + zoekveld, function (error, response, body) {
     body = JSON.parse(body);
-/*    console.log('error:', error);
-    console.log('statusCode:', response); 
-    console.log('body:', body);*/
+    //console.log('error:', error);
+    console.log('statusCode:', response);
+    console.log('movieId: ', body.results[0].id);
+    console.log('poster path: ', body.results[0].poster_path);
+    //console.log('body:', body);
     /*console.log('Filmtitel:', body.results[0].original_title);
     console.log('Beschrijving:', body.results[0].overview);*/
     /*dataApi.push({
@@ -174,6 +197,10 @@ app.get('/', function (req, res) {
 };
 });
 
+app.get('/search', function (req, res) {
+  res.render('search.ejs')
+})
+
 app.get('/contact', function (req, res){
   res.render('contact.ejs')
 });
@@ -204,7 +231,7 @@ app.get('/movie', function (req, res) {
 //This get/function is to search for movies in the API database, this can be ignored! Has nothing to do with the dating-app feature.
 app.get('/movies', function (req, res) {
   //find all objects in database collection
-  var arrayCollection = db.collection('dating-app').find().toArray(done);
+  var arrayCollection = db.collection('addedMovies').find().toArray(done);
   function done(err, data) {
     if (err) {
       console.log('Error, cannot find objects in database');
