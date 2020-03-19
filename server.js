@@ -229,8 +229,6 @@ app.get('/search', function (req, res) {
   res.render('search.ejs')
 });
 
-app.get('/');
-
 app.get('/contact', function (req, res){
   res.render('contact.ejs')
 });
