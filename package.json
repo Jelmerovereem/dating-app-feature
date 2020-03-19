@@ -21,8 +21,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "say-hello": "echo 'hello world!'",
-    "pizza": "echo 'pizza is lekker'",
-    "cool": "npm run --silent say-hello && npm run --silent pizza",
+    "say-bye": "echo 'bye world!'",
+    "runboth": "npm run --silent say-hello && npm run --silent say-bye",
     "bash-hello": "bash hello.sh"
   },
   "repository": {
