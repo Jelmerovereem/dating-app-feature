@@ -7,19 +7,12 @@
 		</header>
 		<main>
 			<section>
-				<div>
-					<img src="https://raw.githubusercontent.com/Jelmerovereem/dating-app-feature/master/static/img/profile_icon.png" alt="">
-					<p><%= data.name %></p>
-				</div>
 				<ul>
-					<!-- <li>Email: <.% Emailadress %.></li> -->
+					<li>Naam: <%= data.name %></li>
+					<li><img src="<%= data.profileImg %>" alt=""></li>
 					<li>Leeftijd: <%= data.age %></li>
-					<li>Favoriete films: <%= data.favoMovies %></li>
-<!-- 					<li>seriesinteresses: <.% serieInterests %.></li>
-<li>Games interesses: <.% gameInterests %.></li> -->
 				</ul>
-			</section>
-			<h1>Voeg film toe aan je favorieten</h1>
+				<h1>Voeg film toe aan je favorieten</h1>
 			<form action="/succes.ejs" method="POST">
 				<label for="movieTitle">Naam film</label>
 				<input name="movieTitle" type="text">
@@ -31,33 +24,43 @@
 					<option value="4">4</option>
 					<option value="5">5</option>
 				</select>
-				<!-- <label for="genre">Genre</label>
-				<select name="genre" id="">
-					<option value="Action">Action</option>
-					<option value="Adult">Adult</option>
-					<option value="Adventure">Adventure</option>
-					<option value="Animation">Animation</option>
-					<option value="Biography">Biography</option>
-				</select>
-				<label for="description">Beschrijving</label>
-				<textarea name="description" id="" cols="30" rows="10"></textarea> -->
 				<button type="submit">Voeg toe</button>
 			</form>
-			<!--<h1>Voeg Serie toe</h1>
-			<form action="" method="POST">
-				<label for="">Naam serie</label>
-				<input name="" type="text">
-				<label for="">Genre</label>
-				<select name="" id="">
-					<option value="">Action</option>
-					<option value="">Adult</option>
-					<option value="">Adventure</option>
-					<option value="">Animation</option>
-					<option value="">Biography</option>
+			<h1>Voeg Serie toe</h1>
+			<form action="/succesSerie.ejs" method="POST">
+				<label for="serieTitle">Naam serie</label>
+				<input name="serieTitle" type="text">
+				<label for="serieStars">Aantal sterren</label>
+				<select name="serieStars" id="">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
 				</select>
-				<label for="description">Beschrijving</label>
-				<textarea name="description" id="" cols="30" rows="10"></textarea>
-			</form>-->
+				<button type="submit">Voeg toe</button>
+			</form>
+			<ul>
+				<li>Favoriete films:
+						<% data.favoMovies.forEach(function(data) { %>
+							<div>
+								<img src="<%= data[1] %>" alt="">
+								<p>Title: <%= data[0] %></p>
+								<p>Rating: <%= data[2] %></p>
+							</div>
+						<% }); %>
+					</li>
+					<li>Favoriete series:
+						<% data.favoSeries.forEach(function(data) { %>
+							<div>
+								<img src="<%= data[1] %>" alt="">
+								<p>Title: <%= data[0] %></p>
+								<p>Rating: <%= data[2] %></p>
+							</div>
+						<% }); %>
+					</li>
+			</ul>
+			</section>
 		</main>
 	</body>
 </html>
