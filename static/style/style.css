@@ -1,9 +1,14 @@
 body {
-	background-color: lightgreen;
+	background-color: green;
 }
+
 form {
 	border: 2px solid black;
 	padding: 20px;
+}
+
+h1, h2, h3, label {
+	color: white;
 }
 
 label, input, button, textarea {
