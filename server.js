@@ -50,6 +50,7 @@ app.use(express.static('static'));
 app.use(bodyParser.urlencoded({ extended: true}));
 app.set('view engine', 'ejs');
 app.post('/succes.ejs', urlencodedParser, addMovie);
+app.post('/succesSerie.ejs', urlencodedParser, addSerie);
 app.post('/film.ejs', urlencodedParser, zoekMovie)
 
 // Declare variable db(database) andd assign null
@@ -82,6 +83,7 @@ function addMovie(req, res) {
     //the movie the user adds to his profile
     let insertedMovie = req.body.movieTitle;
 
+    //the rating the users gives the movie
     let insertedStars = req.body.stars;
     //log this movie for confirmation
     console.log('Movie title input: ', insertedMovie);
@@ -93,21 +95,13 @@ function addMovie(req, res) {
       let posterLink = baseImgURL + body.results[0].poster_path; //the path to the movie poster image
       console.log('imagepath: ', posterLink);
     //Add the title of the movie into the 'favoMovies' array in the database
-    db.collection('users').updateOne({id: 1}, { $addToSet: {favoMovies: body.results[0].original_title}}, function(err, req, res) {
+    db.collection('users').updateOne({id: 1}, { $addToSet: {favoMovies: [body.results[0].original_title, posterLink, insertedStars] }}, function(err, req, res) {
       if (err) {
         console.log('Error, could not update');
       } else {
-        console.log('Update confirmed');
+        console.log('Update confirmed, added/updated ' + body.results[0].original_title + ' and ' + baseImgURL + body.results[0].poster_path + ' to database');
       };
     //Closes the function that is in updateOne()
-    });
-
-
-    //Push the inserted data into the data variable, so it can be rendered to succes.ejs
-    data.push({
-      title: body.results[0].original_title,
-      stars: insertedStars,
-      imgLink: baseImgURL + body.results[0].poster_path
     });
 
     //Create a object in the database and add strings into the object. If the user adds a movie it goes into the database collection 'dating-app'
@@ -119,8 +113,6 @@ function addMovie(req, res) {
     //Closes the function that is in request()
     });
 
-
-
     //Render the inserted data to the succes.ejs page
     res.render('succes.ejs', {
       data: req.body
@@ -131,6 +123,45 @@ function addMovie(req, res) {
     console.log('title: ', req.body.movieTitle);
     console.log('stars: ', req.body.stars);
     console.log('imgLink: ', );
+};
+
+function addSerie(req, res) {
+  //the serie the user adds to his profile
+  let insertedSerie = req.body.serieTitle;
+
+  //the rating the users gives the serie
+  let insertedSerieStars = req.body.serieStars;
+
+  //log this serie for confirmation
+  console.log('Serie title input: ', insertedSerie);
+
+  //search in API for inserted serie
+  request(baseURL + 'search/tv/?api_key=' + APIKEY + '&query=' + insertedSerie, function (error, response, body, req, res) {
+    body = JSON.parse(body); //parse the outcome to object, so requesting data is possible
+    console.log('body: ', body);
+    console.log('Serie title from api: ', body.results[0].original_name); //confirming the title
+    let posterLink = baseImgURL + body.results[0].poster_path;
+    
+    data.push({
+      title: body.results[0].original_name,
+      stars: insertedSerieStars
+    });
+    console.log('data= ', data);
+    //Add the title of the serie into the 'favoSeries' array in the database
+    db.collection('users').updateOne({id: 1}, { $addToSet: {favoSeries: [body.results[0].original_name, posterLink, insertedSerieStars] }}, function(err, req, res) {
+      if (err) {
+        console.log('Error, could not update');
+      } else {
+        console.log('Update confirmed, added/updated ' + body.results[0].original_name + ' and ' + baseImgURL + body.results[0].poster_path + ' to database');
+      };
+    //Closes the function that is in updateOne()
+    });
+  //Closes the function that is in request()
+  });
+  res.render('succesSerie.ejs', {
+    data: req.body
+  });
+  console.log('data2= ', data);
 };
 
 //This function is to search for movies in the API database, this can be ignored! Has nothing to do with the dating-app feature.
@@ -186,9 +217,6 @@ app.get('/', function (req, res) {
   } else {
     console.log('Found user');
   };
-  //Confirm data from the user
-  console.log('naam= ', data.name);
-  console.log('Favomovies: ', data.favoMovies)
 
   //Render his database / profile info into the profile page
   res.render('profile.ejs', {
@@ -199,7 +227,9 @@ app.get('/', function (req, res) {
 
 app.get('/search', function (req, res) {
   res.render('search.ejs')
-})
+});
+
+app.get('/');
 
 app.get('/contact', function (req, res){
   res.render('contact.ejs')
@@ -246,6 +276,10 @@ app.get('/movies', function (req, res) {
   };
 });
 
+app.get('/*', function (req, res) {
+  res.sendFile(__dirname +'/static/404.html')
+});
+
 /*app.get('/:userQuery', function (req,res) {
   res.render('search.ejs', {data : {userQuery: req.params.userQuery,
                                     searchResults: ['user1', 'user2', 'user3'],
@@ -259,10 +293,6 @@ app.get('/movies', function (req, res) {
 /*app.get('/about', function (req, res) {
   console.log(req.query)
   res.sendFile(__dirname +'/static/about.html')
-});
-
-app.get('/*', function (req, res) {
-  res.sendFile(__dirname +'/static/404.html')
 });
 
 app.get('/:userId', function (req, res) {
