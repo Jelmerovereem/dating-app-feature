@@ -22,10 +22,10 @@ const urlencodedParser = bodyParser.urlencoded({
 //require request package, for handling the API
 let request = require('request');
 
-//This is the baseURl for accessing the API database
+//This is the baseURL for accessing the API database
 let baseURL = 'https://api.themoviedb.org/3/';
 
-//This is the baseURl for the images for accessing the images in the API database
+//This is the baseURL for the images for accessing the images in the API database
 let baseImgURL = 'https://image.tmdb.org/t/p/w500';
 
 //The id of a movie in the API database
@@ -60,7 +60,7 @@ app.use(bodyParser.urlencoded({ extended: true}));
 app.set('view engine', 'ejs');
 app.post('/succes.ejs', urlencodedParser, addMovie);
 app.post('/succesSerie.ejs', urlencodedParser, addSerie);
-app.post('/film.ejs', urlencodedParser, searchMovie);
+app.post('/searchResult.ejs', urlencodedParser, searchMovie);
 
 // Declare variable db(database) andd assign null
 let db = null
@@ -121,56 +121,61 @@ function addMovie(req, res) {
     //log this movie for confirmation
     console.log('Movie title input: ', insertedMovie);
 
-    //Assign the session user name to a variable
-    let userSessionName = req.session.user.name;
+    if (!req.session.user) {
+      res.redirect('/login');
+      console.log('Redirected to login page, because user was not logged in yet');
+    } else {
+      //Assign the session user name to a variable
+      let userSessionName = req.session.user.name;
 
-    //search in api for the inserted movie
-    request(baseURL + 'search/movie/?api_key=' + APIKEY + '&query=' + insertedMovie, function (error, response,body, req, res) {
-      body = JSON.parse(body); //parse the outcome to object, so requesting data is possible
-      console.log('Movie title from api: ', body.results[0].original_title); //confirming the title
-      let posterLink = baseImgURL + body.results[0].poster_path; //the path to the movie poster image
-      console.log('imagepath: ', posterLink);
-    //Add the movie info as a object into the 'favoMovies' array in the database
-    db.collection('users').updateOne({name: userSessionName}, { $addToSet: {favoMovies: {
-      title: body.results[0].original_title,
-      posterImage: posterLink,
-      rating: insertedStars
-    }}}, (err, req, res) => {
-      if (err) {
-        console.log('could not add movie to favomovies');
-      } else {
-        console.log('Update confirmed, movie is added to favomovies');
+      //search in api for the inserted movie
+      request(baseURL + 'search/movie/?api_key=' + APIKEY + '&query=' + insertedMovie, function (error, response,body, req, res) {
+        body = JSON.parse(body); //parse the outcome to object, so requesting data is possible
+        console.log('Movie title from api: ', body.results[0].original_title); //confirming the title
+        let posterLink = baseImgURL + body.results[0].poster_path; //the path to the movie poster image
+        console.log('imagepath: ', posterLink);
+      //Add the movie info as a object into the 'favoMovies' array in the database
+      db.collection('users').updateOne({name: userSessionName}, { $addToSet: {favoMovies: {
+        title: body.results[0].original_title,
+        posterImage: posterLink,
+        rating: insertedStars
+      }}}, (err, req, res) => {
+        if (err) {
+          console.log('could not add movie to favomovies');
+        } else {
+          console.log('Update confirmed, movie is added to favomovies');
+        };
+      });
+
+      /*db.collection('users').name: userSessionName.favoMovies.insertOne({
+        title: body.results[0].original_title,
+        posterImage: posterLink,
+        rating: insertedStars
+      }, (err, req, res) => {
+        if (err) {
+          console.log('could not add movie to favomovies');
+        } else {
+          console.log('Update confirmed, movie is added to favomovies');
+        };
+      });*/
+
+      //Create a object in the database and add strings into the object. If the user adds a movie it goes into the database collection 'dating-app'
+      db.collection('addedMovies').insertOne({
+        title: body.results[0].original_title, //get title
+        stars: insertedStars, //get stars
+        imgLink: baseImgURL + body.results[0].poster_path
+      });
+      //Closes the function that is in request()
+      });
+
+      //Render the inserted data to the succes.ejs page
+      res.render('succes.ejs', {
+        data: req.body
+      });
+      
+      //Confirmation for the data that is added to the database
+      console.log('This data is added to the database:', data);
       };
-    });
-
-    /*db.collection('users').name: userSessionName.favoMovies.insertOne({
-      title: body.results[0].original_title,
-      posterImage: posterLink,
-      rating: insertedStars
-    }, (err, req, res) => {
-      if (err) {
-        console.log('could not add movie to favomovies');
-      } else {
-        console.log('Update confirmed, movie is added to favomovies');
-      };
-    });*/
-
-    //Create a object in the database and add strings into the object. If the user adds a movie it goes into the database collection 'dating-app'
-    db.collection('addedMovies').insertOne({
-      title: body.results[0].original_title, //get title
-      stars: insertedStars, //get stars
-      imgLink: baseImgURL + body.results[0].poster_path
-    });
-    //Closes the function that is in request()
-    });
-
-    //Render the inserted data to the succes.ejs page
-    res.render('succes.ejs', {
-      data: req.body
-    });
-    
-    //Confirmation for the data that is added to the database
-    console.log('This data is added to the database:', data);
 };
 
 function addSerie(req, res) {
@@ -252,21 +257,42 @@ function searchMovie(req, res) {
     body = JSON.parse(body);
     console.log('movieId: ', body.results[0].id);
     console.log('poster path: ', body.results[0].poster_path);
-    
+    let movieTitle = body.results[0].original_title;
+    let imgLink = baseImgURL + body.results[0].poster_path;
+    let movieDescription = body.results[0].overview;
+
     request(baseURL + 'movie/' + body.results[0].id + '/videos?api_key=' + APIKEY, function (error, response, body) {
       body = JSON.parse(body);
       let youtubeVideoLink = 'https://www.youtube.com/watch?v=' + body.results[0].key;  
-      return youtubeVideoLink;
-    });
-      
-    console.log('youtube link: ' + youtubeVideoLink);
-    
-    res.render('film.ejs', {
-      dataApi: body.results[0],
+      let embedYoutubeVideoLink = 'https://www.youtube.com/embed/' + body.results[0].key;
+      res.render('searchResult.ejs', {
+      title: movieTitle,
+      movieDescription: movieDescription,
       youtubelink: youtubeVideoLink,
-      imgLink: baseImgURL + body.results[0].poster_path
+      embedYoutubeVideoLink: embedYoutubeVideoLink,
+      imgLink: imgLink
     });
+      console.log('dataApi: ' + movieTitle);
+      console.log('imgLink: ' + imgLink);
+      return
   });
+  });
+
+  /*request(baseURL + 'search/tv/?api_key=' + APIKEY + '&query=' + searchField, function (error, response, body) {
+    body = JSON.parse(body);
+    let TVTitle = body.results[0].original_name;
+    let TVImgLink = baseImgURL + body.results[0].poster_path;
+
+    request(baseURL + 'tv/' + body.results[0].id + '/videos?api_key=' + APIKEY, function (error, response, body) {
+      body = JSON.parse(body);
+      let tvYoutubeVideoLink = 'https://www.youtube.com/watch?v=' + body.results[0].key;
+      res.render('searchResult.ejs', {
+        TVTitle: TVTitle,
+        TVYoutubeLink: tvYoutubeVideoLink,
+        TVImgLink: TVImgLink
+      });
+    });
+  });*/
 };
 
 app.get('/search', function (req, res) {
