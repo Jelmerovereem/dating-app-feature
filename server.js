@@ -19,6 +19,12 @@ const urlencodedParser = bodyParser.urlencoded({
   extended: true
 });
 
+//Require the session package for user sessions
+const session = require('express-session');
+
+//require request package, for handling the API
+var request = require('request');
+
 //This is the baseURl for accessing the API database
 let baseURL = 'https://api.themoviedb.org/3/';
 
@@ -30,9 +36,6 @@ let movieIdApi = 'null';
 
 //The APIKEY 
 let APIKEY = process.env.APIKEY;
-
-//require request package, for handling the API
-var request = require('request');
 
 //use express() with 'app'
 const app = express();
@@ -59,7 +62,7 @@ let db = null
 const url = process.env.DB_HOST + ':' + process.env.DB_PORT;
 
 //Create a connection with the mongo database
-mongo.MongoClient.connect(url, function (err, client, req, res) {
+mongo.MongoClient.connect(url, function (err, client) {
     if (err) {
       //if there is an error, log:
       console.log('Error, database connection failed');
@@ -207,7 +210,8 @@ function zoekMovie(req, res) {
 app.get('/', function (req, res) {
   //look for the only user in database, my jobstory doesn't need more users than 1.
   db.collection('users').findOne({
-  _id: mongo.ObjectID('5e70f258881f3e33fc62b39f')
+  /*_id: mongo.ObjectID('5e70f258881f3e33fc62b39f')*/
+  id: 2
   }, done); 
 
   //Check if the user has been found
