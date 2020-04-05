@@ -19,9 +19,6 @@ const urlencodedParser = bodyParser.urlencoded({
   extended: true
 });
 
-//Require the session package for user sessions
-const session = require('express-session');
-
 //require request package, for handling the API
 var request = require('request');
 
@@ -40,6 +37,15 @@ let APIKEY = process.env.APIKEY;
 //use express() with 'app'
 const app = express();
 
+//Session
+const session = require('express-session'); //Require the session package for user sessions
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true
+}));
+
 //app running on port 8000
 const PORT = 8000;
 
@@ -54,7 +60,7 @@ app.use(bodyParser.urlencoded({ extended: true}));
 app.set('view engine', 'ejs');
 app.post('/succes.ejs', urlencodedParser, addMovie);
 app.post('/succesSerie.ejs', urlencodedParser, addSerie);
-app.post('/film.ejs', urlencodedParser, zoekMovie)
+app.post('/film.ejs', urlencodedParser, zoekMovie);
 
 // Declare variable db(database) andd assign null
 let db = null
@@ -74,13 +80,37 @@ mongo.MongoClient.connect(url, function (err, client) {
     db = client.db(process.env.DB_NAME);
   });
 
-//search in api for the img
-/*request(baseURL + 'configuration?api_key=' + APIKEY, function (error, response, body) {
-  console.log('error: ', error);
-  console.log('Response, img: ', response);
-  console.log('body: ', body);
-  console.log(APIKEY);
-});*/
+//Login page
+app.get('/login', function(req, res) {
+  //Get all users from database to render to the login.ejs page
+  let users = db.collection('users').find().toArray(done);
+
+  function done(err, data) {
+    if (err) {
+      console.log('could not found users');
+    } else {
+      console.log('found users to put into the dropdown');
+    };
+     res.render("login.ejs", {
+      data: data //data contains all the users
+     });
+  };
+});
+
+//If user clicks on 'login' button
+app.post('/login', function(req, res) {
+  //Look for the choosen username in the database.
+  db.collection('users').findOne({name: req.body.userName}, (err, data) => {
+    if (err) {
+      console.log('could not find user');
+    } else {
+      req.session.user = data; //put the database information in the session
+      console.log('Logged in as: ' + data.name);
+      res.redirect('/'); //Redirect to the profile page
+    };
+  });
+});
+
 
 function addMovie(req, res) {
     //the movie the user adds to his profile
@@ -91,6 +121,9 @@ function addMovie(req, res) {
     //log this movie for confirmation
     console.log('Movie title input: ', insertedMovie);
 
+    //Assign the session user name to a variable
+    let userSessionName = req.session.user.name;
+
     //search in api for the inserted movie
     request(baseURL + 'search/movie/?api_key=' + APIKEY + '&query=' + insertedMovie, function (error, response,body, req, res) {
       body = JSON.parse(body); //parse the outcome to object, so requesting data is possible
@@ -98,7 +131,7 @@ function addMovie(req, res) {
       let posterLink = baseImgURL + body.results[0].poster_path; //the path to the movie poster image
       console.log('imagepath: ', posterLink);
     //Add the title of the movie into the 'favoMovies' array in the database
-    db.collection('users').updateOne({id: 1}, { $addToSet: {favoMovies: [body.results[0].original_title, posterLink, insertedStars] }}, function(err, req, res) {
+    db.collection('users').updateOne({name: userSessionName}, { $addToSet: {favoMovies: [body.results[0].original_title, posterLink, insertedStars] }}, function(err, req, res) {
       if (err) {
         console.log('Error, could not update');
       } else {
@@ -138,6 +171,9 @@ function addSerie(req, res) {
   //log this serie for confirmation
   console.log('Serie title input: ', insertedSerie);
 
+  //Assign the session user name to a variable
+  let userSessionName = req.session.user.name;
+
   //search in API for inserted serie
   request(baseURL + 'search/tv/?api_key=' + APIKEY + '&query=' + insertedSerie, function (error, response, body, req, res) {
     body = JSON.parse(body); //parse the outcome to object, so requesting data is possible
@@ -151,7 +187,7 @@ function addSerie(req, res) {
     });
     console.log('data= ', data);
     //Add the title of the serie into the 'favoSeries' array in the database
-    db.collection('users').updateOne({id: 1}, { $addToSet: {favoSeries: [body.results[0].original_name, posterLink, insertedSerieStars] }}, function(err, req, res) {
+    db.collection('users').updateOne({name: userSessionName}, { $addToSet: {favoSeries: [body.results[0].original_name, posterLink, insertedSerieStars] }}, function(err, req, res) {
       if (err) {
         console.log('Error, could not update');
       } else {
@@ -167,56 +203,17 @@ function addSerie(req, res) {
   console.log('data2= ', data);
 };
 
-//This function is to search for movies in the API database, this can be ignored! Has nothing to do with the dating-app feature.
-function zoekMovie(req, res) {
-  let zoekveld = req.body.zoekveld;
-  console.log('Searched on: ', zoekveld);
-
-  request(baseURL + 'search/movie/?api_key=' + APIKEY + '&query=' + zoekveld, function (error, response, body) {
-    body = JSON.parse(body);
-    //console.log('error:', error);
-    console.log('statusCode:', response);
-    console.log('movieId: ', body.results[0].id);
-    console.log('poster path: ', body.results[0].poster_path);
-    //console.log('body:', body);
-    /*console.log('Filmtitel:', body.results[0].original_title);
-    console.log('Beschrijving:', body.results[0].overview);*/
-    /*dataApi.push({
-      title: body.results[0].original_title,
-      description: body.results[0].overview 
-    });*//*
-    dataZelf.push({
-      lol: "test",
-      youtubeLink: 'https://www.youtube.com/results?search_query=' + body.results[0].original_title
-    })*/
-    let youtubeLink = 'https://www.youtube.com/results?search_query=' + body.results[0].original_title;
-    res.render('film.ejs', {
-      dataApi: body.results[0],
-      dataZelf: youtubeLink
-    });
-    console.log('youtubelink= ', youtubeLink);
-    console.log('dataZelf= ', dataZelf);
-    //console.log('dataZelf.youtubeLink= ', dataZelf[0].youtubeLink);
-    //console.log(req.body);
-    //console.log(body.results[0])
-    console.log(dataApi);
-    //console.log('Object:', dataApi[0]);
-    //console.log('description: ', dataApi[0].description);
-    //console.log('dit is data: ', dataApi);
-  });
-};
-
 //The homepage / profile page
 app.get('/', function (req, res) {
-  //look for the only user in database, my jobstory doesn't need more users than 1.
+  if (!req.session.user) { //if user is not logged in, redirect to the login page
+    res.redirect('/login');
+    console.log('Redirected to login page, because user was not logged in yet');
+  } else {
+  //look for the user in database
   db.collection('users').findOne({
-  /*_id: mongo.ObjectID('5e70f258881f3e33fc62b39f')*/
-  id: 2
-  }, done); 
-
-  //Check if the user has been found
-  function done(err, data) {
-  if (err) {
+  name: req.session.user.name
+  },(err, data) => {
+    if (err) {
     console.log('Error, cannot find the object/user name');
   } else {
     console.log('Found user');
@@ -226,8 +223,33 @@ app.get('/', function (req, res) {
   res.render('profile.ejs', {
     data: data
   });
+}); 
 };
 });
+
+//This function is to search for movies in the API database, this can be ignored! Has nothing to do with the dating-app feature.
+function zoekMovie(req, res) {
+  let zoekveld = req.body.zoekveld;
+  console.log('Searched on: ', zoekveld);
+
+  request(baseURL + 'search/movie/?api_key=' + APIKEY + '&query=' + zoekveld, function (error, response, body) {
+    body = JSON.parse(body);
+    console.log('movieId: ', body.results[0].id);
+    console.log('poster path: ', body.results[0].poster_path);
+    
+    request(baseURL + 'movie/' + body.results[0].id + '/videos?api_key=' + APIKEY, function (error, response, body) {
+      body = JSON.parse(body);
+      let youtubeVideoLink = 'https://www.youtube.com/watch?v=' + body.results[0].key;
+      console.log('youtube link: ' + youtubeVideoLink);
+    });
+
+    res.render('film.ejs', {
+      dataApi: body.results[0],
+      youtubelink: youtubeVideoLink,
+      imgLink: baseImgURL + body.results[0].poster_path
+    });
+  });
+};
 
 app.get('/search', function (req, res) {
   res.render('search.ejs')

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+<body>
+	<header>
+		<%- include('partials/navbar') %>
+	</header>
+	<main>
+		<form action="/login" method="post">
+			<select name="userName" id="">
+				<% data.forEach(function(data) { %>
+					<option value="<%= data.name %>" name="userName"><%= data.name %></option>
+				<% }); %>
+			</select>
+			<button type="submit">Login</button>
+		</form>
+	</main>
+</body>
+</html>
