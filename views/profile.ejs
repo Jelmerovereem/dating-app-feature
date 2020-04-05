@@ -44,18 +44,18 @@
 				<li>Favoriete films:
 						<% data.favoMovies.forEach(function(data) { %>
 							<div>
-								<img src="<%= data[1] %>" alt="">
-								<p>Title: <%= data[0] %></p>
-								<p>Rating: <%= data[2] %></p>
+								<img src="<%= data.posterImage %>" alt="">
+								<p>Title: <%= data.title %></p>
+								<p>Rating: <%= data.rating %></p>
 							</div>
 						<% }); %>
 					</li>
 					<li>Favoriete series:
 						<% data.favoSeries.forEach(function(data) { %>
 							<div>
-								<img src="<%= data[1] %>" alt="">
-								<p>Title: <%= data[0] %></p>
-								<p>Rating: <%= data[2] %></p>
+								<img src="<%= data.posterImage %>" alt="">
+								<p>Title: <%= data.title %></p>
+								<p>Rating: <%= data.rating %></p>
 							</div>
 						<% }); %>
 					</li>

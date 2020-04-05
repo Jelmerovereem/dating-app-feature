@@ -20,7 +20,7 @@ const urlencodedParser = bodyParser.urlencoded({
 });
 
 //require request package, for handling the API
-var request = require('request');
+let request = require('request');
 
 //This is the baseURl for accessing the API database
 let baseURL = 'https://api.themoviedb.org/3/';
@@ -60,7 +60,7 @@ app.use(bodyParser.urlencoded({ extended: true}));
 app.set('view engine', 'ejs');
 app.post('/succes.ejs', urlencodedParser, addMovie);
 app.post('/succesSerie.ejs', urlencodedParser, addSerie);
-app.post('/film.ejs', urlencodedParser, zoekMovie);
+app.post('/film.ejs', urlencodedParser, searchMovie);
 
 // Declare variable db(database) andd assign null
 let db = null
@@ -130,15 +130,30 @@ function addMovie(req, res) {
       console.log('Movie title from api: ', body.results[0].original_title); //confirming the title
       let posterLink = baseImgURL + body.results[0].poster_path; //the path to the movie poster image
       console.log('imagepath: ', posterLink);
-    //Add the title of the movie into the 'favoMovies' array in the database
-    db.collection('users').updateOne({name: userSessionName}, { $addToSet: {favoMovies: [body.results[0].original_title, posterLink, insertedStars] }}, function(err, req, res) {
+    //Add the movie info as a object into the 'favoMovies' array in the database
+    db.collection('users').updateOne({name: userSessionName}, { $addToSet: {favoMovies: {
+      title: body.results[0].original_title,
+      posterImage: posterLink,
+      rating: insertedStars
+    }}}, (err, req, res) => {
       if (err) {
-        console.log('Error, could not update');
+        console.log('could not add movie to favomovies');
       } else {
-        console.log('Update confirmed, added/updated ' + body.results[0].original_title + ' and ' + baseImgURL + body.results[0].poster_path + ' to database');
+        console.log('Update confirmed, movie is added to favomovies');
       };
-    //Closes the function that is in updateOne()
     });
+
+    /*db.collection('users').name: userSessionName.favoMovies.insertOne({
+      title: body.results[0].original_title,
+      posterImage: posterLink,
+      rating: insertedStars
+    }, (err, req, res) => {
+      if (err) {
+        console.log('could not add movie to favomovies');
+      } else {
+        console.log('Update confirmed, movie is added to favomovies');
+      };
+    });*/
 
     //Create a object in the database and add strings into the object. If the user adds a movie it goes into the database collection 'dating-app'
     db.collection('addedMovies').insertOne({
@@ -156,9 +171,6 @@ function addMovie(req, res) {
     
     //Confirmation for the data that is added to the database
     console.log('This data is added to the database:', data);
-    console.log('title: ', req.body.movieTitle);
-    console.log('stars: ', req.body.stars);
-    console.log('imgLink: ', );
 };
 
 function addSerie(req, res) {
@@ -186,14 +198,17 @@ function addSerie(req, res) {
       stars: insertedSerieStars
     });
     console.log('data= ', data);
-    //Add the title of the serie into the 'favoSeries' array in the database
-    db.collection('users').updateOne({name: userSessionName}, { $addToSet: {favoSeries: [body.results[0].original_name, posterLink, insertedSerieStars] }}, function(err, req, res) {
+    //Add the serie info as a object into the 'favoSeries' array in the database
+    db.collection('users').updateOne({name: userSessionName}, { $addToSet: {favoSeries: {
+      title: body.results[0].original_name,
+      posterImage: posterLink,
+      rating: insertedSerieStars
+    }}}, (err, req, res) => {
       if (err) {
-        console.log('Error, could not update');
+        console.log('could not add movie to favomovies');
       } else {
-        console.log('Update confirmed, added/updated ' + body.results[0].original_name + ' and ' + baseImgURL + body.results[0].poster_path + ' to database');
+        console.log('Update confirmed, movie is added to favomovies');
       };
-    //Closes the function that is in updateOne()
     });
   //Closes the function that is in request()
   });
@@ -227,22 +242,25 @@ app.get('/', function (req, res) {
 };
 });
 
-//This function is to search for movies in the API database, this can be ignored! Has nothing to do with the dating-app feature.
-function zoekMovie(req, res) {
-  let zoekveld = req.body.zoekveld;
-  console.log('Searched on: ', zoekveld);
 
-  request(baseURL + 'search/movie/?api_key=' + APIKEY + '&query=' + zoekveld, function (error, response, body) {
+//This function is to search for movies in the API database trying to make this work with video trailers, no luck yet. So this can be ignored for now
+function searchMovie(req, res) {
+  let searchField = req.body.searchField;
+  console.log('Searched on: ', searchField);
+
+  request(baseURL + 'search/movie/?api_key=' + APIKEY + '&query=' + searchField, function (error, response, body) {
     body = JSON.parse(body);
     console.log('movieId: ', body.results[0].id);
     console.log('poster path: ', body.results[0].poster_path);
     
     request(baseURL + 'movie/' + body.results[0].id + '/videos?api_key=' + APIKEY, function (error, response, body) {
       body = JSON.parse(body);
-      let youtubeVideoLink = 'https://www.youtube.com/watch?v=' + body.results[0].key;
-      console.log('youtube link: ' + youtubeVideoLink);
+      let youtubeVideoLink = 'https://www.youtube.com/watch?v=' + body.results[0].key;  
+      return youtubeVideoLink;
     });
-
+      
+    console.log('youtube link: ' + youtubeVideoLink);
+    
     res.render('film.ejs', {
       dataApi: body.results[0],
       youtubelink: youtubeVideoLink,
@@ -255,74 +273,10 @@ app.get('/search', function (req, res) {
   res.render('search.ejs')
 });
 
-app.get('/contact', function (req, res){
-  res.render('contact.ejs')
-});
-
-//This get/function is to search for movies in the API database, this can be ignored! Has nothing to do with the dating-app feature.
-app.get('/movie', function (req, res) {
-  //Find object in database collection, after that invoke/perform 'done' function
-  db.collection('dating-app').findOne({
-    _id: mongo.ObjectID('5e70ae1f4b9f5d017b3e215a')
-  }, done);
-
-  //if there is an error, log the error. If there is no error log confirmation and log the object
-  function done(err, data) {
-    if (err) {
-      console.log('Error, cannot find mongo objectID');
-    } else {
-      console.log('Found mongo objectID');
-    };
-    console.log(data.title);
-    //render the object to movie.ejs
-    res.render('movie.ejs', {
-      data: data
-    });
-  };
-});
-
-
-//This get/function is to search for movies in the API database, this can be ignored! Has nothing to do with the dating-app feature.
-app.get('/movies', function (req, res) {
-  //find all objects in database collection
-  var arrayCollection = db.collection('addedMovies').find().toArray(done);
-  function done(err, data) {
-    if (err) {
-      console.log('Error, cannot find objects in database');
-    } else {
-      console.log('Found the objects in database');
-    };
-    console.log(data);
-    console.log(data[0].title);
-    res.render('movies.ejs', {
-      data: data
-    });
-  };
-});
-
+//404 page
 app.get('/*', function (req, res) {
   res.sendFile(__dirname +'/static/404.html')
 });
-
-/*app.get('/:userQuery', function (req,res) {
-  res.render('search.ejs', {data : {userQuery: req.params.userQuery,
-                                    searchResults: ['user1', 'user2', 'user3'],
-                                    loggedIn: false,
-                                    username: 'John Lopez'}})
-});*/
-/*app.get('/', function (req, res) {
-  res.sendFile('/static/index.html')
-});*/
-
-/*app.get('/about', function (req, res) {
-  console.log(req.query)
-  res.sendFile(__dirname +'/static/about.html')
-});
-
-app.get('/:userId', function (req, res) {
-  res.send(req.params.userId)
-});
-*/
 
 //Confirm server running
 app.listen(8000, () => console.log('Done... Server is running'))
