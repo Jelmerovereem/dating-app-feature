@@ -1,8 +1,8 @@
 # dating-app-feature
-Mijn individuele feature voor de dating-app
+My feature for the dating-app
 
 ## Job story / feature
-Mijn job story is dat je als gebruiker je favoriete films kan opzoeken en die kan toevoegen aan je profiel pagina. Zo kunnen mensen van elkaar zien welke films ze beide leuk vinden en daarover praten.
+My job story is about a user that an look up is favorite movies and TV-series and can add these to his/her profile page. So people can see in what movies/tv-series you are interested in and can talk about it.
 
 ## Getting started
 You need to have a connection with Git and have nodejs installed on your computer to let this project run.
