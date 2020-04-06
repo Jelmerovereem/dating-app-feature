@@ -24,6 +24,9 @@ Now you can run the server with: (make sure you are in the root)
 Now go to your browser and go to: localhost:8000
 
 ## Technische Functies / feautures in de app
-* Connectie met mongoDB database
-* Connectie met movie database API
-* Eigen AddMovie functie werkt samen met de database API 
+* Connection with mongoDB database
+* Connection with movie database API
+* Own AddMovie function works together with the database API 
+
+## Database structure
+![image](https://user-images.githubusercontent.com/58043913/78536218-c7b98480-77ed-11ea-96de-9ed5c61acb8d.png)
