@@ -46,7 +46,19 @@
 							<div>
 								<img src="<%= data.posterImage %>" alt="">
 								<p>Title: <%= data.title %></p>
-								<p>Rating: <%= data.rating %></p>
+								<p>Rating: <%= data.rating %></p> <form action="/ratingChanged.ejs" method="POST">
+									<input type="hidden" name="posterImage" value="<%= data.posterImage %>">
+									<input type="hidden" name="movieTitle" value="<%= data.title %>" >
+									<select name="stars" id="">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+				</select>
+
+									<button type="submit">Aanpassen</button>
+								</form>
 							</div>
 						<% }); %>
 					</li>
@@ -55,7 +67,19 @@
 							<div>
 								<img src="<%= data.posterImage %>" alt="">
 								<p>Title: <%= data.title %></p>
-								<p>Rating: <%= data.rating %></p>
+								<p>Rating: <%= data.rating %></p> <form action="/ratingTVChanged.ejs" method="POST">
+									<input type="hidden" name="posterImage" value="<%= data.posterImage %>">
+									<input type="hidden" name="TVTitle" value="<%= data.title %>" >
+									<select name="serieStars" id="">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+				</select>
+
+									<button type="submit">Aanpassen</button>
+								</form>
 							</div>
 						<% }); %>
 					</li>

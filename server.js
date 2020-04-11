@@ -61,6 +61,8 @@ app.set('view engine', 'ejs');
 app.post('/succes.ejs', urlencodedParser, addMovie);
 app.post('/succesSerie.ejs', urlencodedParser, addSerie);
 app.post('/searchResult.ejs', urlencodedParser, searchMovie);
+app.post('/ratingChanged.ejs', urlencodedParser, changeRating);
+app.post('/ratingTVChanged.ejs', urlencodedParser, changeTVRating)
 
 // Declare variable db(database) andd assign null
 let db = null
@@ -221,6 +223,38 @@ function addSerie(req, res) {
     data: req.body
   });
   console.log('data2= ', data);
+};
+
+function changeRating(req, res) {
+  let movieTitle = req.body.movieTitle;
+  let posterImage = req.body.posterImage
+
+  let changedRating = req.body.stars;
+
+  let userSessionName = req.session.user.name;
+
+  db.collection('users').updateOne({name: userSessionName}, { $set: {favoMovies: [{
+    title: movieTitle,
+    posterImage: posterImage,
+    rating: changedRating
+  }]}});
+
+  res.redirect('/');
+};
+
+function changeTVRating(req, res) {
+  let serieTitle = req.body.TVTitle;
+  let posterImage = req.body.posterImage;
+  let changedRating = req.body.serieStars;
+  let userSessionName = req.session.user.name;
+
+  db.collection('users').updateOne({name: userSessionName}, { $set: {favoSeries: [{
+    title: serieTitle,
+    posterImage: posterImage,
+    rating: changedRating
+  }]}});
+
+  res.redirect('/');
 };
 
 //The homepage / profile page
