@@ -18,15 +18,15 @@ function showSearchBar() {
 searchAnchor.addEventListener('click', showSearchBar); // when user clicks on the progressive disclosure btn, fire showSearchBar()
 
 function checkValid() {
-	if (!searchBar.validity.valid) {
-		document.querySelector(".invalid-modal").classList.add("showInvalid-modal");
+	if (!searchBar.validity.valid) { // if invalid
+		document.querySelector(".invalid-modal").classList.add("showInvalid-modal"); // show the invalid message
 		
-	} else if (searchBar.validity.valid) {
-		document.querySelector(".invalid-modal").classList.remove("showInvalid-modal");
+	} else if (searchBar.validity.valid) { // if valid
+		document.querySelector(".invalid-modal").classList.remove("showInvalid-modal"); // remove the invalid message
 	}
 }
 
-searchBar.addEventListener('input', checkValid);
+searchBar.addEventListener('input', checkValid); // when input is recognized, fire up checkValid()
 
 
 const progressiveDisclosureBtns = document.querySelectorAll(".progressiveDisclosureBtn"); // get the buttons for the user to click on
