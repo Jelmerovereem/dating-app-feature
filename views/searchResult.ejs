@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-</head>
+<%- include('partials/head') %>
 <body>
 	<header>
 		<%- include('partials/navbar') %>
 	</header>
-	<h1>Gelukt!</h1>
-
-	<p>Film:</p>
-	<p>Titel: <%= title %></p>
+	<main>
+	<h1><%= title %></h1>
 	<p>Beschrijving: <%= movieDescription %></p>
-	<iframe width="560" height="315" src="<%= embedYoutubeVideoLink %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+	<iframe width="360" height="200" src="<%= embedYoutubeVideoLink %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 	<img src="<%= imgLink %>" alt="">
 	
 	<form action="/succes.ejs" method="POST">
 		<input type="hidden" name="movieTitle" value="<%= title %>">
 		<button type="submit">Voeg toe aan mijn favorieten</button>
-	</form>	
+	</form>
+	</main>	
+
+	<script src="script/script.js"></script>
 </body>
 </html>

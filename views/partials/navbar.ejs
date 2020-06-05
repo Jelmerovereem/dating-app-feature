@@ -1,12 +1,16 @@
 <nav>
 	<a href="/"><img src="https://raw.githubusercontent.com/Jelmerovereem/dating-app-feature/master/static/img/Logo_MovieDates.png" alt=""></a>
 	<ul>
-		<li><a href="/">Mijn profiel<img src="https://raw.githubusercontent.com/Jelmerovereem/dating-app-feature/master/static/img/profile_icon.png" alt=""></a></li>
-		<li><a href="/search">Zoeken</a></li>
-		<li><form action="/searchResult.ejs" method="POST">
-			<input name="searchField" type="text">
-			<button type="submit">Zoek op film</button>
-		</form></li>
-		<li><a href="/login">Uitloggen</a></li>
+		<li><a href="/"><img src="https://raw.githubusercontent.com/Jelmerovereem/dating-app-feature/master/static/img/profile_icon.png" alt=""></a></li>
+		<li>
+			<form action="/searchResult.ejs" method="POST">
+			<input name="searchField" type="text" required>
+			<button type="submit"><img src="https://user-images.githubusercontent.com/58043913/79428403-6734ff00-7fc6-11ea-8181-fa653db3311b.png" alt=""></button>
+			<a href="#"><img src="https://user-images.githubusercontent.com/58043913/79428403-6734ff00-7fc6-11ea-8181-fa653db3311b.png" alt=""></a>
+		</form>
+			<a href="/login"><img src="https://user-images.githubusercontent.com/58043913/79427375-da3d7600-7fc4-11ea-9625-a44fe84a8bdf.png" alt=""></a></li>
 	</ul>
 </nav>
+<div class="invalid-modal">
+	<p>Vul iets in om te zoeken!</p>
+</div>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<head><title>Je profiel</title></head>
 	<%- include('partials/head') %>
 	<body>
 		<header>
@@ -8,83 +9,95 @@
 		<main>
 			<section>
 				<ul>
-					<li>Naam: <%= data.name %></li>
+					<h1>Je profiel</h1>
 					<li><img src="<%= data.profileImg %>" alt=""></li>
+					<li>Naam: <%= data.name %></li>
 					<li>Leeftijd: <%= data.age %></li>
 				</ul>
-				<h1>Voeg film toe aan je favorieten</h1>
-			<form action="/succes.ejs" method="POST">
-				<label for="movieTitle">Naam film</label>
-				<input name="movieTitle" type="text">
-				<label for="stars">Aantal sterren</label>
-				<select name="stars" id="">
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-				</select>
-				<button type="submit">Voeg toe</button>
-			</form>
-			<h1>Voeg Serie toe</h1>
-			<form action="/succesSerie.ejs" method="POST">
-				<label for="serieTitle">Naam serie</label>
-				<input name="serieTitle" type="text">
-				<label for="serieStars">Aantal sterren</label>
-				<select name="serieStars" id="">
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-				</select>
-				<button type="submit">Voeg toe</button>
-			</form>
-			<ul>
-				<li>Favoriete films:
+				<h1>Voeg een film toe</h1>
+				<form action="/succes.ejs" method="POST">
+					<label for="movieTitle">Naam film</label>
+					<input name="movieTitle" type="text" placeholder="Avengers: Endgame" required>
+					<label for="stars">Aantal sterren</label>
+					<select name="stars" id="">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+					</select>
+					<div class="btns">
+					<button type="submit">Voeg toe</button>
+					<input type="reset">
+					</div>
+				</form>
+				<h1>Voeg een Serie toe</h1>
+				<form action="/succesSerie.ejs" method="POST">
+					<label for="serieTitle">Naam serie</label>
+					<input name="serieTitle" type="text" placeholder="The Flash" required>
+					<label for="serieStars">Aantal sterren</label>
+					<select name="serieStars" id="">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+					</select>
+					<div class="btns">
+					<button type="submit">Voeg toe</button>
+					<input type="reset">
+					</div>
+				</form>
+				<ul>
+					<h2>Favoriete films:</h2>
+					<li>
 						<% data.favoMovies.forEach(function(data) { %>
-							<div>
-								<img src="<%= data.posterImage %>" alt="">
-								<p>Title: <%= data.title %></p>
-								<p>Rating: <%= data.rating %></p> <form action="/ratingChanged.ejs" method="POST">
-									<input type="hidden" name="posterImage" value="<%= data.posterImage %>">
-									<input type="hidden" name="movieTitle" value="<%= data.title %>" >
-									<select name="stars" id="">
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-				</select>
-
-									<button type="submit">Aanpassen</button>
-								</form>
-							</div>
-						<% }); %>
-					</li>
-					<li>Favoriete series:
-						<% data.favoSeries.forEach(function(data) { %>
-							<div>
-								<img src="<%= data.posterImage %>" alt="">
-								<p>Title: <%= data.title %></p>
-								<p>Rating: <%= data.rating %></p> <form action="/ratingTVChanged.ejs" method="POST">
-									<input type="hidden" name="posterImage" value="<%= data.posterImage %>">
-									<input type="hidden" name="TVTitle" value="<%= data.title %>" >
-									<select name="serieStars" id="">
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-				</select>
-
-									<button type="submit">Aanpassen</button>
-								</form>
-							</div>
-						<% }); %>
-					</li>
-			</ul>
-			</section>
-		</main>
-	</body>
+						<div>
+							<img src="<%= data.posterImage %>" alt="">
+							<p>Title: <%= data.title %></p>
+							<p>Rating: <%= data.rating %></p> <form action="/ratingChanged.ejs" method="POST">
+							<input type="hidden" name="posterImage" value="<%= data.posterImage %>">
+							<input type="hidden" name="movieTitle" value="<%= data.title %>" >
+							<select name="stars" class="changeRatingNone" id="">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+							</select>
+							<a href="javascript:void(0)" class="progressiveDisclosureBtn">Rating aanpassen</a>
+							<button type="submit" class="editBtnNone">Aanpassen</button>
+							<a href="javascript:void(0)" class="cancelBtn removeCancelBtn">Cancel</a>
+						</form>
+					</div>
+					<% }); %>
+				</li>
+				<h2>Favoriete series:</h2>
+				<li>
+					<% data.favoSeries.forEach(function(data) { %>
+					<div>
+						<img src="<%= data.posterImage %>" alt="">
+						<p>Title: <%= data.title %></p>
+						<p>Rating: <%= data.rating %></p> <form action="/ratingTVChanged.ejs" method="POST">
+						<input type="hidden" name="posterImage" value="<%= data.posterImage %>">
+						<input type="hidden" name="TVTitle" value="<%= data.title %>" >
+						<select name="serieStars" class="changeRatingNone" id="">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>
+						<a href="javascript:void(0)" class="progressiveDisclosureBtn">Rating aanpassen</a>
+						<button type="submit" class="editBtnNone">Aanpassen</button>
+						<a href="javascript:void(0)" class="cancelBtn removeCancelBtn">Cancel</a>
+					</form>
+				</div>
+				<% }); %>
+			</li>
+		</ul>
+	</section>
+</main>
+<script src="script/script.js"></script>
+</body>
 </html>
